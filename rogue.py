@@ -142,7 +142,7 @@ class BasicMonster:
 			closest_dist = MONSTER_GROUP_RANGE
 			closest_monster = None			
 			for object in objects:
-				if object.fighter and not object == player:
+				if object.fighter and not object == player and not object == monster:
 					dist = monster.distance_to(object)
 					if dist < closest_dist:  #it's closer, so remember it
 						closest_monster = object
