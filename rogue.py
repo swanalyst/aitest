@@ -7,7 +7,9 @@ SCREEN_HEIGHT = 80
 LIMIT_FPS = 20
 
 LIGHTNING_RANGE = 5
-LIGHTNING_DAMAGE = 5
+LIGHTNING_MAX_DAMAGE = 5
+
+MP_REGENERATION_INTERVAL = 10
 
 MAP_WIDTH = 120
 MAP_HEIGHT = 75
@@ -31,6 +33,8 @@ MSG_WIDTH = SCREEN_WIDTH - BAR_WIDTH - 2
 MSG_HEIGHT = PANEL_HEIGHT - 1
 
 MAX_ROOM_MONSTERS = 3
+
+MONSTER_GROUP_RANGE = 50
 
 color_dark_wall = libtcod.Color(0, 0, 100)
 color_light_wall = libtcod.Color(130, 110, 50)
@@ -84,14 +88,14 @@ class Mage:
 		if self.mp <= 1:
 			message('Not enough magic points.')
 			return 'cancelled'
-		message('Left-click an enemy to zap it, or right-click to cancel. (Range 1-4)', libtcod.light_cyan)
+		message('Left-click an enemy to zap it, or right-click to cancel. (Range 2-4)', libtcod.light_cyan)
 		monster = target_monster(LIGHTNING_RANGE)
 		if monster is None:
 			message('Canceled.')
 			return 'cancelled'
  
     	#zap it!
-		damage = 2*libtcod.random_get_int(0, 1, LIGHTNING_DAMAGE)    
+		damage = 2*libtcod.random_get_int(0, 1, LIGHTNING_MAX_DAMAGE)    
 		message('A lighting bolt strikes the ' + monster.name + ' with a loud thunder! The damage is '
 			+ str(damage) + ' hit points.', libtcod.light_blue)
 		monster.fighter.take_damage(damage)
@@ -135,7 +139,7 @@ class BasicMonster:
 
 		#Default behaviour, flock into attack group with neighbouring monsters
 		elif self.state == 'flocking':
-			closest_dist = 40
+			closest_dist = MONSTER_GROUP_RANGE
 			closest_monster = None			
 			for object in objects:
 				if object.fighter and not object == player:
@@ -378,7 +382,7 @@ def player_move_or_attack(dx, dy):
 	global turn_counter
  
 	turn_counter += 1
-	if turn_counter % 10 == 0:
+	if turn_counter % MP_REGENERATION_INTERVAL == 0:
 		player.mage.regenerate()
 
     #the coordinates the player is moving to/attacking
@@ -662,8 +666,8 @@ fov_recompute = True
 
 panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
 
-message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.red)
-message('Press Backspace or Del to hurl mighty lightning bolts..', libtcod.red)
+message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.white)
+message('Press Backspace or Del to hurl mighty lightning bolts..', libtcod.white)
 
 
 mouse = libtcod.Mouse()
